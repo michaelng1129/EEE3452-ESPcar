@@ -8,4 +8,11 @@
 #define LEDG_PIN 26
 #define LEDB_PIN 27
 
+#define Dht_PIN 22
+
 #define SERVO_PIN 17
+
+#define BUZZZER_PIN 12
+
+#define UltrasonicSensorTrig_PIN 34
+#define UltrasonicSensorEcho_PIN 35

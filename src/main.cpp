@@ -6,9 +6,10 @@
 #include "motor.h"
 #include "lcd.h"
 #include "steeringServo.h"
+#include "thSensor.h"
 
-const char *ssid = "NCW-Personal";
-const char *password = "Ncw5201314";
+const char *ssid = "ENG-LAB-N2";
+const char *password = "12345678";
 
 WiFiServer server(80);
 
@@ -40,19 +41,19 @@ void setupwifi()
 
 void testall()
 {
-  // setLEDBrightness(LEDC_CHANNEL1, 128);
+  setLEDBrightness(LEDC_CHANNEL1, 128);
   delay(1000);
-  // setLEDBrightness(LEDC_CHANNEL2, 255);
+  setLEDBrightness(LEDC_CHANNEL2, 255);
   delay(1000);
-  // setLEDBrightness(LEDC_CHANNEL3, 128);
+  setLEDBrightness(LEDC_CHANNEL3, 128);
   delay(1000);
-  // setLEDBrightness(LEDC_CHANNEL1, 0);
-  // setLEDBrightness(LEDC_CHANNEL2, 0);
-  // setLEDBrightness(LEDC_CHANNEL3, 0);
-  // delay(3000);
-  // setLEDBrightness(LEDC_CHANNEL1, 0);
-  // setLEDBrightness(LEDC_CHANNEL2, 0);
-  // setLEDBrightness(LEDC_CHANNEL3, 0);
+  setLEDBrightness(LEDC_CHANNEL1, 0);
+  setLEDBrightness(LEDC_CHANNEL2, 0);
+  setLEDBrightness(LEDC_CHANNEL3, 0);
+  delay(3000);
+  setLEDBrightness(LEDC_CHANNEL1, 0);
+  setLEDBrightness(LEDC_CHANNEL2, 0);
+  setLEDBrightness(LEDC_CHANNEL3, 0);
   setMotorSpeed(75);
   delay(2000);
   setMotorSpeed(0);
@@ -60,6 +61,7 @@ void testall()
   setMotorSpeed(-75);
   delay(2000);
   setMotorSpeed(0);
+  ServoTest();
 }
 
 void setup()
@@ -67,15 +69,21 @@ void setup()
   Serial.begin(115200);
   setupSteeringServo();
   setupLCD();
-  //setupLED();
+  setupLED();
   setupMCPWM();
   setupwifi();
+  setupthSensor();
   testall();
   drawScreen();
 }
 
 void loop()
 {
+  readDht();
+  float test = dht.readTemperature();
+  drawScreen2(test);
+  float test2 = readHumidity();
+  drawScreen3(test2);
   WiFiClient client = server.available();
 
   if (client)
@@ -106,6 +114,9 @@ void loop()
             client.print("Click <a href=\"/Test\">here</a> to Test<br>");
             client.print("Click <a href=\"/led\">here</a> to led<br>");
             client.print("Click <a href=\"/servo\">here</a> to servo<br>");
+            client.print("Click <a href=\"/servoTurnLeft\">here</a> to servoTurnLeft<br>");
+            client.print("Click <a href=\"/servoTurnRight\">here</a> to servoTurnRight<br>");
+            client.print("Click <a href=\"/servoTo90\">here</a> to servoTo90<br>");
             client.print("Click <a href=\"/Stop\">here</a> to Stop<br>");
             client.print(stringstatus);
             client.print("</p>");
@@ -159,19 +170,37 @@ void loop()
         if (currentLine.endsWith("GET /led"))
         {
           Serial.println("TestLed");
-          // fadeEffect(LEDC_CHANNEL1);
-          // fadeEffect(LEDC_CHANNEL2);
-          // fadeEffect(LEDC_CHANNEL3);
+          fadeEffect(LEDC_CHANNEL1);
+          fadeEffect(LEDC_CHANNEL2);
+          fadeEffect(LEDC_CHANNEL3);
           delay(5000);
-          //   setLEDBrightness(LEDC_CHANNEL1, 0);
-          //   setLEDBrightness(LEDC_CHANNEL2, 0);
-          //   setLEDBrightness(LEDC_CHANNEL3, 0);
+          setLEDBrightness(LEDC_CHANNEL1, 0);
+          setLEDBrightness(LEDC_CHANNEL2, 0);
+          setLEDBrightness(LEDC_CHANNEL3, 0);
         }
         if (currentLine.endsWith("GET /servo"))
         {
 
           Serial.println("servo");
           ServoTest();
+        }
+        if (currentLine.endsWith("GET /servoTurnLeft"))
+        {
+
+          Serial.println("TurnLeft");
+          turnLeft();
+        }
+        if (currentLine.endsWith("GET /servoTurnRight"))
+        {
+
+          Serial.println("servo");
+          turnRight();
+        }
+        if (currentLine.endsWith("GET /servoTo90"))
+        {
+
+          Serial.println("servo");
+          servoStop();
         }
         if (currentLine.endsWith("GET /Stop"))
         {

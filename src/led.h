@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "pin.h"
 
-#define LEDC_CHANNEL1 1
-#define LEDC_CHANNEL2 1
-#define LEDC_CHANNEL3 2
+#define LEDC_CHANNEL1 2
+#define LEDC_CHANNEL2 3
+#define LEDC_CHANNEL3 4
 
 #define LEDC_FREQUENCY 5000
 #define LEDC_RESOLUTION 8
